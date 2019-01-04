@@ -1,0 +1,278 @@
+CREATE TABLE Tuote
+(
+  Tuotenimi VARCHAR(40) NOT NULL,
+  Tuote_ID INT NOT NULL,
+  Varastosaldo INT,
+  Varmuusvarastoraja INT NOT NULL,
+  Hinta INT NOT NULL,
+  PRIMARY KEY (Tuote_ID)
+
+  CHECK (Varastosaldo BETWEEN 0 AND 9001)
+);
+
+CREATE TABLE Kuriiri
+(
+  Kuriirinimi VARCHAR(40),
+  Maine INT NOT NULL,
+  PRIMARY KEY (Kuriirinimi)
+
+  CHECK (Maine BETWEEN 0 AND 5)
+);
+
+CREATE TABLE Asuinpaikka
+(
+  Katu VARCHAR(40) NOT NULL,
+  Postinumero INT NOT NULL,
+  AsuinpaikkaID INT NOT NULL,
+  PRIMARY KEY (AsuinpaikkaID)
+);
+
+CREATE TABLE Postinumerotaulukko
+(
+  Paikkakunta VARCHAR(40) NOT NULL,
+  Postinumero INT NOT NULL,
+  AsuinpaikkaID INT NOT NULL,
+  PRIMARY KEY (Paikkakunta),
+  FOREIGN KEY (AsuinpaikkaID) REFERENCES Asuinpaikka(AsuinpaikkaID)
+);
+
+CREATE TABLE Asiakas
+(
+  Asiakkaan_nimi VARCHAR(40) NOT NULL,
+  Asiakas_ID INT NOT NULL,
+  Asiakkaan_tilaukset INT NOT NULL,
+  AsuinpaikkaID INT NOT NULL,
+  PRIMARY KEY (Asiakas_ID),
+  FOREIGN KEY (AsuinpaikkaID) REFERENCES Asuinpaikka(AsuinpaikkaID)
+
+  CHECK (Asiakkaan_tilaukset BETWEEN 0 AND 9001)
+);
+
+CREATE TABLE Toimittaja
+(
+  Toimittajanimi VARCHAR(40) NOT NULL,
+  Lahtien DATE NOT NULL,
+  AsuinpaikkaID INT NOT NULL,
+  Puhelinnumero INT NOT NULL,
+  PRIMARY KEY (Toimittajanimi),
+  FOREIGN KEY (AsuinpaikkaID) REFERENCES Asuinpaikka(AsuinpaikkaID)
+);
+
+CREATE TABLE Tyontekija
+(
+  Tyontekijan_nimi VARCHAR(40) NOT NULL,
+  Henkilotunnus INT NOT NULL,
+  Puhelinnumero INT NOT NULL,
+  Sahkoposti INT NOT NULL,
+  AsuinpaikkaID INT NOT NULL,
+  PRIMARY KEY (Henkilotunnus),
+  FOREIGN KEY (AsuinpaikkaID) REFERENCES Asuinpaikka(AsuinpaikkaID)
+);
+
+CREATE TABLE Asiakkaan_tilaus
+(
+  Tilaus_ID INT NOT NULL,
+  Tilauspvmklo DATETIME NOT NULL,
+  Toimituspvm DATE NOT NULL,
+  Henkilotunnus INT NOT NULL,
+  Kuriirinimi VARCHAR(40) NOT NULL,
+  Asiakas_ID INT NOT NULL,
+  Tilauksentila VARCHAR(1),
+  PRIMARY KEY (Tilaus_ID),
+  FOREIGN KEY (Henkilotunnus) REFERENCES Tyontekija(Henkilotunnus),
+  FOREIGN KEY (Kuriirinimi) REFERENCES Kuriiri(Kuriirinimi),
+  FOREIGN KEY (Asiakas_ID) REFERENCES Asiakas(Asiakas_ID)
+
+  CHECK (Tilauksentila IN ('V', 'K', 'L'))
+
+);
+
+CREATE TABLE Asiakastilauskoostuu
+(
+  Asiakastilausrivi_ID INT NOT NULL,
+  Maara INT NOT NULL,
+  Tuote_ID INT NOT NULL,
+  Tilaus_ID INT NOT NULL,
+  PRIMARY KEY (Asiakastilausrivi_ID)
+  FOREIGN KEY (Tilaus_ID) REFERENCES Asiakkaan_tilaus(Tilaus_ID)
+  FOREIGN KEY (Tuote_ID) REFERENCES Tuote(Tuote_ID)
+);
+
+CREATE TABLE Omatilaus
+(
+  Tilauspvmklo DATETIME NOT NULL,
+  Toimitus_pvm DATE NOT NULL,
+  Tilausnumero INT NOT NULL,
+  Toimittajanimi VARCHAR(40) NOT NULL,
+  PRIMARY KEY (Tilausnumero),
+  FOREIGN KEY (Toimittajanimi) REFERENCES Toimittaja(Toimittajanimi)
+);
+
+CREATE TABLE Omatilauskoostuu
+(
+  Omatilausrivi_ID INT NOT NULL,
+  Maara INT NOT NULL,
+  Tilausnumero INT NOT NULL,
+  Tuote_ID INT NOT NULL,
+  PRIMARY KEY (Omatilausrivi_ID)
+  FOREIGN KEY (Tilausnumero) REFERENCES Omatilaus(Tilausnumero),
+  FOREIGN KEY (Tuote_ID) REFERENCES Tuote(Tuote_ID)
+);
+
+Insert into Tuote 
+(Tuotenimi, Tuote_ID, Varastosaldo, Varmuusvarastoraja, Hinta)
+VALUES
+('Novideo 1080ti',1,20,2, 600);
+
+Insert into Tuote 
+(Tuotenimi, Tuote_ID, Varastosaldo, Varmuusvarastoraja, Hinta)
+VALUES
+('Novideo gtx 480',2,23,2, 200);
+
+Insert into Tuote 
+(Tuotenimi, Tuote_ID, Varastosaldo, Varmuusvarastoraja, Hinta)
+VALUES
+('Ayymd Ryzen 1800X',3,100,95, 350);
+
+Insert into Tuote 
+(Tuotenimi, Tuote_ID, Varastosaldo, Varmuusvarastoraja, Hinta)
+VALUES
+('Shintel 7700k',4,10,2,350);
+
+Insert into Tuote 
+(Tuotenimi, Tuote_ID, Varastosaldo, Varmuusvarastoraja, Hinta)
+VALUES
+('Ayymd Fury X',5,100,95, 350);
+
+
+Insert into Kuriiri
+(Kuriirinimi,Maine)
+VALUES
+('Posti',2);
+
+Insert into Kuriiri
+(Kuriirinimi,Maine)
+VALUES
+('UPS',4);
+
+Insert into Kuriiri
+(Kuriirinimi,Maine)
+VALUES
+('DHL',4);
+
+Insert into Kuriiri
+(Kuriirinimi,Maine)
+VALUES
+('Penan poistipalvelu',5);
+
+Insert into Asuinpaikka
+(Katu,Postinumero,AsuinpaikkaID)
+VALUES
+('Wiinikatu 23A',83400,1);
+
+Insert into Asuinpaikka
+(Katu,Postinumero,AsuinpaikkaID)
+VALUES
+('Uliopistokatu 1',53850,2);
+
+Insert into Postinumerotaulukko
+(Paikkakunta, Postinumero,AsuinpaikkaID)
+VALUES
+('Viinijärvi',83400,1);
+
+Insert into Postinumerotaulukko
+(Paikkakunta, Postinumero,AsuinpaikkaID)
+VALUES
+('Lappeenranta',53850,2);
+
+Insert into Asiakas
+(Asiakkaan_nimi,Asiakas_ID,Asiakkaan_tilaukset,AsuinpaikkaID)
+VALUES
+('Uolevi',1,100,2);
+
+Insert into Asiakas
+(Asiakkaan_nimi,Asiakas_ID,Asiakkaan_tilaukset,AsuinpaikkaID)
+VALUES
+('Pyöveli',2,100,2);
+
+Insert into Asiakas
+(Asiakkaan_nimi,Asiakas_ID,Asiakkaan_tilaukset,AsuinpaikkaID)
+VALUES
+('Ryöukko',3,20,1);
+
+Insert into Toimittaja
+(Toimittajanimi, Lahtien, AsuinpaikkaID, Puhelinnumero)
+VALUES
+('TukkuliikeAB','2007-01-01',1,0402340982);
+
+Insert into Tyontekija
+(Tyontekijan_nimi,Henkilotunnus,Puhelinnumero,Sahkoposti,AsuinpaikkaID)
+VALUES
+('Ryöpena',1,04042424242,'ryöpenasposti@gmail.com',1);
+
+Insert into Tyontekija
+(Tyontekijan_nimi,Henkilotunnus,Puhelinnumero,Sahkoposti,AsuinpaikkaID)
+VALUES
+('Ryöteekkari',2,0404423242,'ryöukko@lut.fi',2);
+
+Insert into Asiakkaan_tilaus
+(Tilaus_ID, Tilauspvmklo,Toimituspvm,Henkilotunnus,Kuriirinimi,Asiakas_ID,Tilauksentila)
+VALUES
+(1,"2017-02-02 10:00:00","2017-03-01",1,'DHL',1,'V');
+
+Insert into Asiakkaan_tilaus
+(Tilaus_ID, Tilauspvmklo,Toimituspvm,Henkilotunnus,Kuriirinimi,Asiakas_ID,Tilauksentila)
+VALUES
+(2,"2017-02-02 10:00:00","2017-03-01",1,'DHL',1,'V');
+
+Insert into Asiakkaan_tilaus
+(Tilaus_ID, Tilauspvmklo,Toimituspvm,Henkilotunnus,Kuriirinimi,Asiakas_ID,Tilauksentila)
+VALUES
+(3,"2017-02-02 10:00:00","2017-03-01",1,'DHL',1,'V');
+
+Insert into Asiakastilauskoostuu
+(Asiakastilausrivi_ID,Maara, Tuote_ID, Tilaus_ID)
+VALUES
+(1,20,3,1);
+
+Insert into Asiakastilauskoostuu
+(Asiakastilausrivi_ID,Maara, Tuote_ID, Tilaus_ID)
+VALUES
+(2,20,5,2);
+
+Insert into Asiakastilauskoostuu
+(Asiakastilausrivi_ID,Maara, Tuote_ID, Tilaus_ID)
+VALUES
+(3,20,2,3);
+
+Insert into Omatilaus
+(Tilauspvmklo,Toimitus_pvm,Tilausnumero,Toimittajanimi)
+VALUES
+("2017-04-04 12:00:01","2017-09-05",1,"TukkuliikeAB");
+
+Insert into Omatilaus
+(Tilauspvmklo,Toimitus_pvm,Tilausnumero,Toimittajanimi)
+VALUES
+("2017-04-04 12:00:01","2017-09-05",2,"TukkuliikeAB");
+
+Insert into Omatilaus
+(Tilauspvmklo,Toimitus_pvm,Tilausnumero,Toimittajanimi)
+VALUES
+("2017-04-04 12:00:01","2017-09-05",3,"TukkuliikeAB");
+
+Insert into Omatilauskoostuu
+(Omatilausrivi_ID ,Maara, Tilausnumero, Tuote_ID)
+VALUES
+(1,20,1,1);
+
+Insert into Omatilauskoostuu
+(Omatilausrivi_ID ,Maara, Tilausnumero, Tuote_ID)
+VALUES
+(2,40,2,2);
+
+Insert into Omatilauskoostuu
+(Omatilausrivi_ID ,Maara, Tilausnumero, Tuote_ID)
+VALUES
+(3,50,3,3);
+
+

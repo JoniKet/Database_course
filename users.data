@@ -1,0 +1,9 @@
+# users.data
+# ID, salasana, ryhmä
+#
+admin:salasana:admin
+pomo:POMO:admin
+ryöukko:RYÖ:varastomies
+töttö:TÖTTÖ:sihteeri
+töttö2:TÖTTÖ2:sihteeri
+ryöukko2:RYÖ2:varastomies
